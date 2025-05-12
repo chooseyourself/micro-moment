@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet"> 
     <style>
         :root {
-            --primary-green: #7E9C82; /* New Soothing Green */
-            --primary-green-darker: #6A856F; /* Darker shade for hover */
-            --light-green-accent: #B9D8BB; /* New Lighter Green */
-            --light-green-accent-darker: #A2C1A5; /* Darker shade for hover */
-            --soft-neutral-accent: #E0DCD8; /* New Soft Warm Grey */
-            --soft-neutral-accent-darker: #C8C1BA; /* Darker shade for hover */
+            --primary-green: #7E9C82; 
+            --primary-green-darker: #6A856F; 
+            --light-green-accent: #B9D8BB; 
+            --light-green-accent-darker: #A2C1A5; 
+            --soft-neutral-accent: #E0DCD8; 
+            --soft-neutral-accent-darker: #C8C1BA; 
             --page-bg: #F8F8F7; 
             --text-dark: #4A4A4A; 
             --text-medium: #5D5C61;
@@ -423,10 +423,10 @@
 <body>
     <header class="site-header">
         <img 
-            src="choose_yourself.png.png" 
+            src="https://placehold.co/250x80/7E9C82/F8F8F7?text=Choose+Yourself&font=playfairdisplay" 
             alt="Choose Yourself Logo" 
             class="logo-img"
-            onerror="this.style.display='none'; const altText = document.createElement('div'); altText.textContent = this.alt + ' (Image not found - please use a hosted image URL)'; altText.className = 'logo-img-fallback'; this.parentNode.insertBefore(altText, this);"
+            onerror="this.style.display='none'; const altText = document.createElement('div'); altText.textContent = this.alt + ' (Image not found - please use a hosted image URL or correct local path)'; altText.className = 'logo-img-fallback'; this.parentNode.insertBefore(altText, this);"
         >
     </header>
 
@@ -434,7 +434,7 @@
         <div class="landing-content">
             <div class="section">
                 <h2>Your Moment to Recharge & Refocus</h2>
-                <p>You work hard and your well-being is key to thriving. Short, mindful breaks aren't just pauses; they are powerful tools to enhance your day. Imagine being able to:</p>
+                <p>You work hard at work and your well-being is key to thriving. Short, mindful breaks aren't just pauses; they are powerful tools to enhance your day. Imagine being able to:</p>
                 <ul class="custom-bullets">
                     <li><strong>Navigate Stress with Grace:</strong>Customized meditation session delivered to you as per your schedule. Step away from the pressure by being in the right frame of mind.</li>
                     <li><strong>Sharpen Your Mind Just Before Key Events:</strong> Approach important meetings, presentations, or challenging tasks with a clear, focused, and confident mindset.</li>
@@ -543,7 +543,7 @@
 
         const addTimeSlotBtn = document.getElementById('addTimeSlotBtn');
         const timeSlotsList = document.getElementById('timeSlotsList');
-        const timeSlotsListContainer = document.getElementById('timeSlotsListContainer'); // Get the container
+        const timeSlotsListContainer = document.getElementById('timeSlotsListContainer'); 
         const noTimesMessage = document.getElementById('noTimesMessage');
         const reminderStatusDiv = document.getElementById('reminderStatus');
         
@@ -575,7 +575,7 @@
         let activeReminderTime = null;
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayShortNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzd_8GEtO8ohARx3IP488up_L1qCG_kb0JSZjx7OFPI1bt_VGFkdcIoOIe_NvrvKTQH/exec'; // Replace with your actual URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzd_8GEtO8ohARx3IP488up_L1qCG_kb0JSZjx7OFPI1bt_VGFkdcIoOIe_NvrvKTQH/exec'; 
 
 
         // --- Initialize App on Load ---
@@ -584,7 +584,7 @@
             initializeMainApp();
             document.body.style.alignItems = 'flex-start'; 
             updateSelectedDaysText(); 
-            renderTimeSlots(); // Call to set initial visibility of schedule section
+            renderTimeSlots(); 
         };
         
         // --- Dropdown Logic ---
@@ -652,6 +652,29 @@
             updateSelectedDaysText(); 
         }
 
+        // --- Notification Permission ---
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                showToast("This browser does not support desktop notification.", 4000);
+            } else if (Notification.permission === "granted") {
+                // Permission already granted
+                // showToast("Notification permission already granted.", 2000);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        showToast("Notification permission granted!", 3000);
+                        // You could optionally send a test notification here:
+                        // new Notification("Choose Yourself", { body: "Notifications are now active!"});
+                    } else {
+                        showToast("Notification permission denied.", 3000);
+                    }
+                });
+            } else { // Permission was denied
+                 showToast("Notifications are blocked. Please enable them in browser settings.", 4000);
+            }
+        }
+
+
         // --- Reminder Logic ---
         addTimeSlotBtn.addEventListener('click', () => {
             const timeValue = newTimeSlotInput.value;
@@ -687,6 +710,12 @@
             });
             renderTimeSlots();
             showToast(`Meditation time added for ${formatDisplayTime(hours, minutes)} on selected days.`);
+            
+            // Request notification permission after the first reminder is set
+            if(reminderTimes.length === 1) { // Only ask on the very first reminder added
+                 requestNotificationPermission();
+            }
+
             newTimeSlotInput.value = ''; 
             document.querySelectorAll('#daysDropdownContent .day-checkbox').forEach(cb => cb.checked = false); 
             allDaysCheckbox.checked = false; 
@@ -706,12 +735,12 @@
         function renderTimeSlots() {
             timeSlotsList.innerHTML = ''; 
             if (reminderTimes.length === 0) {
-                timeSlotsListContainer.classList.add('hidden'); // Hide the container
-                noTimesMessage.classList.remove('hidden'); // Show "No meditation times set yet."
+                timeSlotsListContainer.classList.add('hidden'); 
+                noTimesMessage.classList.remove('hidden'); 
                 reminderStatusDiv.textContent = "Add some times to get started.";
             } else {
-                timeSlotsListContainer.classList.remove('hidden'); // Show the container
-                noTimesMessage.classList.add('hidden'); // Hide "No meditation times set yet."
+                timeSlotsListContainer.classList.remove('hidden'); 
+                noTimesMessage.classList.add('hidden'); 
                 reminderTimes.forEach(rt => {
                     const listItem = document.createElement('li');
                     listItem.className = 'time-slot-item';
@@ -739,12 +768,11 @@
 
         function removeTimeSlot(id) {
             reminderTimes = reminderTimes.filter(rt => rt.id !== id);
-            renderTimeSlots(); // This will re-evaluate visibility
+            renderTimeSlots(); 
             showToast("Time slot removed.");
             if (reminderTimes.length === 0 && reminderIntervalId) {
                 clearInterval(reminderIntervalId);
                 reminderIntervalId = null;
-                // reminderStatusDiv.textContent set by renderTimeSlots
             }
         }
         
@@ -786,6 +814,7 @@
         }
 
         function promptForFocus(reminder) {
+            // Show in-app UI changes
             showToast(`It's ${formatDisplayTime(reminder.hours, reminder.minutes)} - time for your mindful moment!`, 5000);
             settingsSection.classList.add('hidden');
             meditationSection.classList.remove('hidden');
@@ -796,6 +825,22 @@
             finishSessionBtn.classList.add('hidden'); 
             focusInput.value = ''; 
             meditationTitleElement.textContent = `Mindful Moment at ${formatDisplayTime(reminder.hours, reminder.minutes)}`;
+
+            // Attempt to show a browser notification if permission is granted
+            if (("Notification" in window) && Notification.permission === "granted") {
+                const notificationBody = "Time for your scheduled meditation. Click to open.";
+                const notification = new Notification("Choose Yourself", { 
+                    body: notificationBody,
+                    // Replace with your actual logo URL once hosted, or remove if not needed
+                    icon: 'https://placehold.co/96x96/7E9C82/F8F8F7?text=CY&font=playfairdisplay' 
+                });
+                // Optional: Handle notification click to focus the tab
+                notification.onclick = function(event) {
+                    window.focus(); // Focus the current tab
+                    // You might want to navigate to a specific part of the app or close the notification
+                    // event.target.close(); // Close the notification
+                };
+            }
         }
 
         startFocusedMeditationBtn.addEventListener('click', () => {
@@ -909,7 +954,7 @@
             if (newTimeSlotInput) {
                 newTimeSlotInput.value = `${defaultHours}:${defaultMinutes}`;
             }
-            renderTimeSlots(); // Initial call to set visibility
+            renderTimeSlots(); 
              if (reminderTimes.length > 0 && !reminderIntervalId) { 
                 reminderIntervalId = setInterval(checkReminders, 1000);
             }
